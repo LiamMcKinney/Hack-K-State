@@ -19,6 +19,11 @@ public class Main {
     }
 
     private static void startLoop() {
+        try {
+            Thread.sleep(5000);
+        }catch(Throwable e){
+            e.printStackTrace();
+        }
         boolean running = true;
         while (running) {
             CameraInput.updateCamera();

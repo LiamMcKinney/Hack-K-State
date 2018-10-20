@@ -24,13 +24,13 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="file://$USER_HOME$/Downloads/javacv-bin" />
+          <root url="file://$USER_HOME$/Downloads/javacv-platform-1.4.3-bin/javacv-bin" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="file://$USER_HOME$/Downloads/javacv-bin/samples" />
+          <root url="file://$USER_HOME$/Downloads/javacv-platform-1.4.3-bin/javacv-bin/samples" />
         </SOURCES>
-        <jarDirectory url="file://$USER_HOME$/Downloads/javacv-bin" recursive="false" />
+        <jarDirectory url="file://$USER_HOME$/Downloads/javacv-platform-1.4.3-bin/javacv-bin" recursive="false" />
       </library>
     </orderEntry>
   </component>
