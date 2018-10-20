@@ -15,7 +15,12 @@ public class Main {
         Game guitarHero = new GuitarHeroRules(leftHand, rightHand);
 
         while(true) {
-            camera.update();
+            try {
+                camera.updateCamera();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             KeyboardOutput.pressKey(guitarHero.getAreaFromLeftHandPos(leftHand.getX()));
             KeyboardOutput.pressKey(guitarHero.getAreaFromRightHandPos(rightHand.getY()));
         }

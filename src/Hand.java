@@ -1,7 +1,6 @@
 import java.util.ArrayList;
 
 public class Hand {
-<<<<<<< HEAD
     public double x;
     public double y;
     public boolean[] fingers;
@@ -33,6 +32,10 @@ public class Hand {
     public double getY() {
         return y;
     }
-=======
->>>>>>> 6d21b80e2cdec25618c39d166d40ecaaad5d9590
+
+    public void setX(int x) { this.x = x;}
+
+    public void setY(int y) { this.y = y;}
 }
+
+

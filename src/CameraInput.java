@@ -12,8 +12,8 @@ public class CameraInput {
     Mat maxRedHSV;
     Mat minGreenHSV;
     Mat maxGreenHSV;
-    Hand rightHand = new Hand(0,0);
-    Hand leftHand = new Hand(0,0);
+    Hand rightHand = new Hand();
+    Hand leftHand = new Hand();
 
     public CameraInput() throws Exception{
         grabber = FrameGrabber.createDefault(0);
