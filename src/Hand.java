@@ -6,4 +6,8 @@ public class Hand {
     public Hand(){
         fingers = new boolean[5];
     }
+
+    public void setX(double newX){
+        x  = newX;
+    }
 }
