@@ -1,13 +1,11 @@
 import java.util.ArrayList;
 
-public class Hand {
-    public double x;
-    public double y;
-    public boolean[] fingers;
+class Hand {
+    private double x;
+    private double y;
+    private static boolean[] fingers;
 
-
-
-    public Hand(){
+    Hand(){
         fingers = new boolean[3];
     }
 
@@ -15,8 +13,8 @@ public class Hand {
      * Iterates through the fingers array, and returns a list of which
      * @return list of fingers down
      */
-    public ArrayList<Integer> getFingersDown() {
-        ArrayList<Integer> fingersDown = new ArrayList<Integer>();
+    static ArrayList<Integer> getFingersDown() {
+        ArrayList<Integer> fingersDown = new ArrayList<>();
         for (int i = 0; i < fingers.length; i++) {
             if(fingers[i]) {
                 fingersDown.add(i);
@@ -25,17 +23,17 @@ public class Hand {
         return fingersDown;
     }
 
-    public double getX() {
+    double getX() {
         return x;
     }
 
-    public double getY() {
+    double getY() {
         return y;
     }
 
-    public void setX(int x) { this.x = x;}
+    void setX(int x) { this.x = x;}
 
-    public void setY(int y) { this.y = y;}
+    void setY(int y) { this.y = y;}
 }
 
 

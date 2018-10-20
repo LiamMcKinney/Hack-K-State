@@ -2,44 +2,39 @@
 
 public class Main {
 
-    private static Hand leftHand;
-    private static Hand rightHand;
+    static Hand leftHand = new Hand();
+    static Hand rightHand = new Hand();
 
-    private static CameraInput camera;
+    //TODO: Change to generic game type
+    private static GuitarHeroRules currentApplication;
 
     public static void main(String[] args){
+        motionInit();
+        startLoop();
+    }
 
-        leftHand = new Hand();
-        rightHand = new Hand();
+    private static void motionInit() {
+        initGame("GuitarHero");
+        CameraInput.initCamera();
+    }
 
-        Game guitarHero = new GuitarHeroRules(leftHand, rightHand);
-
-        while(true) {
-            try {
-                camera.updateCamera();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            KeyboardOutput.pressKey(guitarHero.getAreaFromLeftHandPos(leftHand.getX()));
-            KeyboardOutput.pressKey(guitarHero.getAreaFromRightHandPos(rightHand.getY()));
+    private static void startLoop() {
+        boolean running = true;
+        while (running) {
+            CameraInput.updateCamera();
+            KeyboardOutput.pressKey(currentApplication.getAreaFromLeftHandPos());
+            KeyboardOutput.pressKey(currentApplication.getAreaFromRightHandPos());
         }
-
     }
 
-    public Hand getLeftHand() {
-        return leftHand;
-    }
-
-    public Hand getRightHand() {
-        return rightHand;
-    }
-
-    public void setLeftHand(Hand hand) {
-        this.leftHand = hand;
-    }
-
-    public void setRightHand(Hand hand) {
-        this.rightHand = hand;
+    private static void initGame(String guitarHero) {
+        switch (guitarHero) {
+            case "GuitarHero":
+                GuitarHeroRules.init();
+                currentApplication = new GuitarHeroRules();
+            default:
+                GuitarHeroRules.init();
+                currentApplication = new GuitarHeroRules();
+        }
     }
 }

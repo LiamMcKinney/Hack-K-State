@@ -11,7 +11,7 @@ public interface Game {
 
     ArrayList<Integer> getKeysFromRightHand(ArrayList<Integer> list);
 
-    int getAreaFromLeftHandPos(double pos);
+    int getAreaFromLeftHandPos();
 
-    int getAreaFromRightHandPos(double pos);
+    int getAreaFromRightHandPos();
 }

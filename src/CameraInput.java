@@ -5,19 +5,23 @@ import static org.bytedeco.javacpp.opencv_core.*;
 import static org.bytedeco.javacpp.opencv_imgproc.*;
 
 public class CameraInput {
-    FrameGrabber grabber;
-    OpenCVFrameConverter.ToMat converter;
-    CanvasFrame frame;
-    Mat minRedHSV;
-    Mat maxRedHSV;
-    Mat minGreenHSV;
-    Mat maxGreenHSV;
-    Hand rightHand = new Hand();
-    Hand leftHand = new Hand();
+    private static FrameGrabber grabber;
+    private static OpenCVFrameConverter.ToMat converter;
+    private static CanvasFrame frame;
+    private static Mat minRedHSV;
+    private static Mat maxRedHSV;
+    private static Mat minGreenHSV;
+    private static Mat maxGreenHSV;
+    private static Hand rightHand = Main.rightHand;
+    private static Hand leftHand = Main.leftHand;
 
-    public CameraInput() throws Exception{
-        grabber = FrameGrabber.createDefault(0);
-        grabber.start();
+    static void initCamera() {
+        try {
+            grabber = FrameGrabber.createDefault(0);
+            grabber.start();
+        } catch (FrameGrabber.Exception e) {
+            e.printStackTrace();
+        }
 
         //converts between Mats, Images, Frames, etc.
         converter = new OpenCVFrameConverter.ToMat();
@@ -31,8 +35,13 @@ public class CameraInput {
         maxGreenHSV = new Mat(1, 1, CV_32SC4, new IntPointer(89, 255, 255, 0));
     }
 
-    public boolean updateCamera() throws Exception {
-        Mat grabbedImage = converter.convert(grabber.grab());
+    static boolean updateCamera() {
+        Mat grabbedImage = null;
+        try {
+            grabbedImage = converter.convert(grabber.grab());
+        } catch (FrameGrabber.Exception e) {
+            e.printStackTrace();
+        }
         int height = grabbedImage.rows();
         int width = grabbedImage.cols();
 
@@ -82,6 +91,7 @@ public class CameraInput {
         rightHand.setX(biggestRect.x());
         rightHand.setY(biggestRect.y());
         rectangle(grabbedImage, biggestRect, Scalar.RED);
+
         if(frame.isVisible() && (grabbedImage) != null) {
             Frame rotatedFrame = converter.convert(grabbedImage);
             frame.showImage(rotatedFrame);
@@ -89,15 +99,14 @@ public class CameraInput {
         return (frame.isVisible() && (grabbedImage) != null);
     }
 
-    public Hand getLeftHand() throws Exception{
-        return leftHand;
-    }
-    public Hand getRightHand() throws Exception{
-        return rightHand;
-    }
 
-    public void close() throws Exception {
+    public void close() {
         frame.dispose();
-        grabber.stop();
+
+        try {
+            grabber.stop();
+        } catch (FrameGrabber.Exception e) {
+            e.printStackTrace();
+        }
     }
 }
