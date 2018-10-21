@@ -11,13 +11,11 @@ public class CameraInput {
     private static FrameGrabber grabber;
     private static OpenCVFrameConverter.ToMat converter;
     private static CanvasFrame frame;
-    private static Mat minRedHSV;
-    private static Mat maxRedHSV;
     private static Mat minGreenHSV;
     private static Mat maxGreenHSV;
     private static Hand rightHand = Main.rightHand;
     private static Hand leftHand = Main.leftHand;
-    private static int minArea = 3000;
+    private static int minArea = 800;
 
 
     static void initCamera() {
@@ -32,6 +30,11 @@ public class CameraInput {
         try {
             grabber = FrameGrabber.createDefault(0);
             grabber.start();
+            grabber.setImageWidth(32);
+            grabber.setImageHeight(24);
+            System.out.println("width: "+grabber.getImageWidth());
+            System.out.println("height: "+grabber.getImageHeight());
+
         } catch (FrameGrabber.Exception e) {
             e.printStackTrace();
         }
@@ -41,18 +44,15 @@ public class CameraInput {
 
         frame = new CanvasFrame("Some Title", CanvasFrame.getDefaultGamma()/grabber.getGamma());
 
-        minRedHSV = new Mat(1, 1, CV_32SC4, new IntPointer(163, 186, 60, 0));
-        maxRedHSV = new Mat(1, 1, CV_32SC4, new IntPointer(180, 255, 242, 0));
-
-        minGreenHSV = new Mat(1, 1, CV_32SC4, new IntPointer(0, 50, 172, 0));
-        maxGreenHSV = new Mat(1, 1, CV_32SC4, new IntPointer(18, 90, 255, 0));
+        minGreenHSV = new Mat(1, 1, CV_32SC4, new IntPointer(0, 39, 138, 0));
+        maxGreenHSV = new Mat(1, 1, CV_32SC4, new IntPointer(35, 90, 255, 0));
     }
 
     static boolean updateCamera() {
         Mat grabbedImage = null;
         try {
             grabbedImage = converter.convert(grabber.grab());
-            grabbedImage.
+            resize(grabbedImage, grabbedImage, new Size(320,240));
         } catch (FrameGrabber.Exception e) {
             e.printStackTrace();
         }
@@ -61,55 +61,55 @@ public class CameraInput {
 
         Mat grayImage = new Mat(height, width, CV_8UC1);
         Mat HSVImage = new Mat(height, width, CV_8UC1);
-        Mat greenImage = new Mat(height, width, CV_8UC1);
-        Mat redImage = new Mat(height, width, CV_8UC1);
+        Mat armImage = new Mat(height, width, CV_8UC1);
 
         cvtColor(grabbedImage, HSVImage, CV_BGR2HSV);
         cvtColor(grabbedImage, grayImage, CV_BGR2GRAY);
 
-
-
-        inRange(HSVImage, minRedHSV, maxRedHSV, redImage);
-        inRange(HSVImage, minGreenHSV, maxGreenHSV, greenImage);
+        inRange(HSVImage, minGreenHSV, maxGreenHSV, armImage);
 
         MatVector contours = new MatVector();
-        findContours(redImage, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
+        findContours(armImage, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
 
         long n = contours.size();
         Rect biggestRect = new Rect(0,0,0,0);
+        Rect bigRec2 = new Rect(0,0,0,0);
         Rect rect;
         for (long i = 0; i < n; i++) {
             Mat contour = contours.get(i);
             rect = boundingRect(contour);
             if(rect.area() > biggestRect.area() && rect.area() > minArea){
+                bigRec2 = biggestRect;
                 biggestRect = rect;
+            }else if(rect.area() > bigRec2.area() && rect.area() > minArea){
+                bigRec2 = rect;
             }
             Mat points = new Mat();
             approxPolyDP(contour, points, arcLength(contour, true) * 0.02, true);
             drawContours(grabbedImage, new MatVector(points), -1, Scalar.BLACK);
         }
-        leftHand.setX(biggestRect.x());
-        leftHand.setY(biggestRect.y());
-        rectangle(grabbedImage, biggestRect, Scalar.RED);
-
-        findContours(greenImage, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
-
-        n = contours.size();
-        biggestRect = new Rect(0,0,0,0);
-        for (long i = 0; i < n; i++) {
-            Mat contour = contours.get(i);
-            rect = boundingRect(contour);
-            if(rect.area() > biggestRect.area() && rect.area() > minArea){
-                biggestRect = rect;
-            }
-            Mat points = new Mat();
-            approxPolyDP(contour, points, arcLength(contour, true) * 0.02, true);
-            drawContours(grabbedImage, new MatVector(points), -1, Scalar.RED);
+        if(biggestRect.x() < bigRec2.x()){
+            rightHand.setX(biggestRect.x() + (1/2 * biggestRect.width()));
+            rightHand.setY(biggestRect.y() + (1/2 * biggestRect.height()));
+            rectangle(grabbedImage, biggestRect, Scalar.RED);
+            leftHand.setX(bigRec2.x() + (1/2 * bigRec2.width()));
+            leftHand.setY(bigRec2.y() + (1/2 * bigRec2.height()));
+            rectangle(grabbedImage, bigRec2, Scalar.BLUE);
+        }else{
+            leftHand.setX(biggestRect.x() + (1/2 * biggestRect.width()));
+            leftHand.setY(biggestRect.y() + (1/2 * biggestRect.height()));
+            rectangle(grabbedImage, biggestRect, Scalar.BLUE);
+            rightHand.setX(bigRec2.x() + (1/2 * bigRec2.width()));
+            rectangle(grabbedImage, bigRec2, Scalar.RED);
         }
-        rightHand.setX(biggestRect.x());
-        rightHand.setY(biggestRect.y());
-        rectangle(grabbedImage, biggestRect, Scalar.RED);
+        //strumming rectangle
+        rectangle(grabbedImage, new Point(0, GuitarHeroRules.Y_POS_DOWN), new Point(1000, 1000), Scalar.RED);
 
+        //note rectangles
+        rectangle(grabbedImage, new Point(0, 0), new Point(GuitarHeroRules.X_POS_2 - 1, 1000), Scalar.BLUE);
+        rectangle(grabbedImage, new Point(GuitarHeroRules.X_POS_2, 0), new Point(GuitarHeroRules.X_POS_1 - 1, 1000), Scalar.YELLOW);
+        rectangle(grabbedImage, new Point(GuitarHeroRules.X_POS_1, 0), new Point(GuitarHeroRules.X_POS_0 - 1, 1000), Scalar.RED);
+        rectangle(grabbedImage, new Point(GuitarHeroRules.X_POS_0, 0), new Point(grabbedImage.arrayWidth() - 1, 1000), Scalar.GREEN);
 
         if(frame.isVisible() && (grabbedImage) != null) {
             Frame rotatedFrame = converter.convert(grabbedImage);

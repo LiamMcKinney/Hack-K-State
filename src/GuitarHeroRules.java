@@ -6,11 +6,11 @@ import java.util.Map;
 public class GuitarHeroRules implements Game {
 
     //private static final double Y_POS_UP = 180;
-    private static final double Y_POS_DOWN = 270;
+    public static final int Y_POS_DOWN = 120;
 
-    private static final double X_POS_0 = 500;
-    private static final double X_POS_1 = 420;
-    private static final double X_POS_2 = 340;
+    public static final int X_POS_0 = 240;
+    public static final int X_POS_1 = 200;
+    public static final int X_POS_2 = 160;
 
     private static Map<Integer, Integer> leftHandMap = new HashMap<>();
     private static Map<Integer, Integer> rightHandMap = new HashMap<>();

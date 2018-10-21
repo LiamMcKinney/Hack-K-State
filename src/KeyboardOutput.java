@@ -21,14 +21,17 @@ public class KeyboardOutput {
     }
 
     public static void pressKey(int button) {
+        if(button == 0){return;}
         try {
             Robot robot = new Robot();
-
             robot.keyPress(button);
+
+            //robot.delay(150);
 
         } catch (AWTException e) {
             e.printStackTrace();
         }
+
     }
 
     /**
@@ -49,6 +52,7 @@ public class KeyboardOutput {
     }
 
     public static void releaseKey(int button) {
+        if(button == 0){return;}
         try {
             Robot robot = new Robot();
 
